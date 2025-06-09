@@ -1,0 +1,464 @@
+<!-- filepath: c:\Users\EMRYZ\Desktop\crypto_project\crypto_project\crypto_bot\templates\render.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Crypto Virtual Assistant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        :root {
+            --primary: #10a37f;
+            --primary-dark: #0d8c6c;
+            --bg: #ececf1;
+            --chat-bg: #fff;
+            --user-msg-bg: #10a37f;
+            --user-msg-color: #fff;
+            --bot-msg-bg: #f0f0f0;
+            --bot-msg-color: #222;
+            --bot-msg-border: #e0e0e0;
+            --input-bg: #f7f7f8;
+            --input-border: #e5e5e5;
+            --header-bg: #fff;
+            --header-color: #444;
+            --shadow: 0 2px 16px rgba(0,0,0,0.07);
+        }
+        body.dark {
+            --bg: #18181a;
+            --chat-bg: #232328;
+            --user-msg-bg: #10a37f;
+            --user-msg-color: #fff;
+            --bot-msg-bg: #232328;
+            --bot-msg-color: #ececf1;
+            --bot-msg-border: #33343a;
+            --input-bg: #232328;
+            --input-border: #33343a;
+            --header-bg: #232328;
+            --header-color: #ececf1;
+            --shadow: 0 2px 24px rgba(0,0,0,0.35);
+        }
+        body {
+            background: var(--bg);
+            font-family: 'Segoe UI', 'Inter', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            transition: background 0.3s;
+        }
+        .chat-root {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            width: 100vw;
+        }
+        .chat-header {
+            width: 100%;
+            background: var(--header-bg);
+            border-bottom: 1px solid var(--input-border);
+            padding: 12px 0;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--header-color);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .chat-window {
+            background: var(--chat-bg);
+            width: 100%;
+            max-width: 420px;
+            margin: 24px 0 0 0;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            height: 80vh;
+            min-height: 420px;
+            overflow: hidden;
+            position: relative;
+        }
+        .theme-toggle-container {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            pointer-events: none;
+        }
+        .theme-toggle-btn {
+            background: var(--input-bg);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+            color: var(--header-color);
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            z-index: 30;
+            pointer-events: auto;
+        }
+        .theme-toggle-btn:hover {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(16,163,127,0.15);
+        }
+        .theme-toggle-btn svg {
+            width: 22px;
+            height: 22px;
+        }
+        .assistant-label {
+            width: 100%;
+            background: var(--primary);
+            color: #fff;
+            text-align: center;
+            font-size: 1.08rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            padding: 14px 0 12px 0;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            box-shadow: 0 1px 4px rgba(16,163,127,0.07);
+            margin-bottom: 2px;
+            z-index: 5;
+            transition: background 0.3s, color 0.3s;
+        }
+        body.dark .assistant-label {
+            background: var(--primary-dark);
+            color: #fff;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 16px 10px 12px 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: var(--chat-bg);
+        }
+        .message-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 0;
+        }
+        .message-row.user {
+            justify-content: flex-end;
+        }
+        .message-row.bot {
+            justify-content: flex-start;
+        }
+        .message {
+            padding: 10px 16px;
+            border-radius: 18px;
+            font-size: 1rem;
+            max-width: 80vw;
+            min-width: 40px;
+            word-break: break-word;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+            margin-bottom: 2px;
+            margin-top: 2px;
+        }
+        .message.user {
+            background: var(--user-msg-bg);
+            color: var(--user-msg-color);
+            border-bottom-right-radius: 6px;
+            border-bottom-left-radius: 18px;
+            margin-right: 4px;
+            align-self: flex-end;
+        }
+        .message.bot {
+            background: var(--bot-msg-bg);
+            color: var(--bot-msg-color);
+            border-bottom-left-radius: 6px;
+            border-bottom-right-radius: 18px;
+            border: 1px solid var(--bot-msg-border);
+            margin-left: 4px;
+            align-self: flex-start;
+        }
+        .chat-input-bar {
+            display: flex;
+            align-items: center;
+            padding: 12px 10px;
+            background: var(--chat-bg);
+            border-top: 1px solid var(--input-border);
+            position: sticky;
+            bottom: 0;
+            z-index: 10;
+        }
+        .chat-input-bar input[type="text"] {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            background: var(--input-bg);
+            color: var(--bot-msg-color);
+            transition: border-color 0.2s, background 0.3s, color 0.3s;
+        }
+        .chat-input-bar input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+        .chat-input-bar button {
+            margin-left: 8px;
+            padding: 10px 18px 10px 12px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+        .chat-input-bar button svg {
+            width: 20px;
+            height: 20px;
+            fill: #fff;
+            transition: transform 0.2s;
+        }
+        .chat-input-bar button:hover {
+            background: var(--primary-dark);
+        }
+        .chat-input-bar button:hover svg {
+            transform: translateX(3px) scale(1.08) rotate(-8deg);
+        }
+        /* Typing animated dots */
+        .typing-indicator {
+            display: inline-block;
+            vertical-align: middle;
+            height: 18px;
+            margin-left: 2px;
+        }
+        .typing-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            margin: 0 1.5px;
+            background: #bbb;
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: blink 1.2s infinite both;
+        }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes blink {
+            0%, 80%, 100% { opacity: 0.6; }
+            40% { opacity: 1; }
+        }
+        @media (max-width: 600px) {
+            .chat-window {
+                max-width: 100vw;
+                height: 100vh;
+                margin: 0;
+                border-radius: 0;
+            }
+            .assistant-label {
+                font-size: 1rem;
+                padding: 10px 0 8px 0;
+            }
+            .chat-messages {
+                padding: 10px 2px 8px 2px;
+            }
+            .chat-header {
+                font-size: 1rem;
+                padding: 10px 0;
+            }
+            .chat-input-bar {
+                padding: 8px 2px;
+            }
+            .theme-toggle-container {
+                top: 8px;
+                left: 8px;
+            }
+            .theme-toggle-btn {
+                width: 34px;
+                height: 34px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-root">
+        <div class="chat-header"></div>
+        <div class="chat-window">
+            <div class="theme-toggle-container">
+                <button class="theme-toggle-btn" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">
+                    <svg id="theme-icon" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="5" fill="currentColor"/>
+                        <g id="sun-rays">
+                            <line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
+                            <line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="2"/>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" stroke-width="2"/>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="2"/>
+                            <line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="2"/>
+                            <line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2"/>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor" stroke-width="2"/>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor" stroke-width="2"/>
+                        </g>
+                    </svg>
+                </button>
+            </div>
+            <div class="assistant-label">
+                Crypto Virtual Assistant
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <!-- Messages will appear here -->
+            </div>
+            <form class="chat-input-bar" id="chat-form" autocomplete="off">
+                <input type="text" id="user-input" name="user_query" placeholder="Type your message..." required autocomplete="off" />
+                <button type="submit" title="Send">
+                    <span style="display:none;">Send</span>
+                    <svg viewBox="0 0 24 24">
+                        <path d="M2 21l21-9-21-9v7l15 2-15 2z"/>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
+    <script>
+        // Theme toggling
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        function setTheme(dark) {
+            if (dark) {
+                document.body.classList.add('dark');
+                themeIcon.innerHTML = `
+                    <path d="M21.64 13.65A9 9 0 0 1 12 21a9 9 0 0 1 0-18c.34 0 .67.02 1 .05A7 7 0 0 0 21.64 13.65z" fill="currentColor"/>
+                `;
+            } else {
+                document.body.classList.remove('dark');
+                themeIcon.innerHTML = `
+                    <circle cx="12" cy="12" r="5" fill="currentColor"/>
+                    <g id="sun-rays">
+                        <line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
+                        <line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="2"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" stroke-width="2"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="2"/>
+                        <line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="2"/>
+                        <line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor" stroke-width="2"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor" stroke-width="2"/>
+                    </g>
+                `;
+            }
+            localStorage.setItem('theme', dark ? 'dark' : 'light');
+        }
+        setTheme(localStorage.getItem('theme') === 'dark');
+        themeToggle.onclick = () => setTheme(!document.body.classList.contains('dark'));
+
+        // Chat logic
+        const chatForm = document.getElementById('chat-form');
+        const userInput = document.getElementById('user-input');
+        const chatMessages = document.getElementById('chat-messages');
+
+        function appendMessage(text, sender) {
+            const row = document.createElement('div');
+            row.className = 'message-row ' + sender;
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message ' + sender;
+            msgDiv.textContent = text;
+            row.appendChild(msgDiv);
+            chatMessages.appendChild(row);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Typing animated dots for bot
+        function appendBotTypingIndicator() {
+            const row = document.createElement('div');
+            row.className = 'message-row bot';
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message bot';
+            msgDiv.innerHTML = `<span class="typing-indicator">
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+            </span>`;
+            row.appendChild(msgDiv);
+            chatMessages.appendChild(row);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return row;
+        }
+
+        function appendBotMessageAnimated(text) {
+            // Remove any existing typing indicator
+            const typingRow = document.querySelector('.typing-indicator')?.parentElement?.parentElement;
+            if (typingRow) typingRow.remove();
+
+            const row = document.createElement('div');
+            row.className = 'message-row bot';
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message bot';
+            row.appendChild(msgDiv);
+            chatMessages.appendChild(row);
+
+            let index = 0;
+            function typeChar() {
+                if (index < text.length) {
+                    msgDiv.textContent += text.charAt(index);
+                    index++;
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    setTimeout(typeChar, 14); // typing speed in ms
+                }
+            }
+            typeChar();
+        }
+
+        chatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const message = userInput.value.trim();
+            if (!message) return;
+            appendMessage(message, 'user');
+            userInput.value = '';
+            appendBotTypingIndicator(); // show animated dots
+
+            fetch("", {
+                method: "POST",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRFToken": getCookie('csrftoken'),
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: "user_query=" + encodeURIComponent(message)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.response) {
+                    appendBotMessageAnimated(data.response);
+                } else if (data.error) {
+                    appendBotMessageAnimated(data.error);
+                }
+            })
+            .catch(() => {
+                appendBotMessageAnimated("Sorry, something went wrong.");
+            });
+        });
+
+        // CSRF helper for Django
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+</html>
